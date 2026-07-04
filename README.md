@@ -1,5 +1,7 @@
 # QuantBox
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-younghwan--chae-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/younghwan-chae/)
+
 **암호화폐 페어 트레이딩 프레임워크**
 
 백테스팅과 실거래를 통합한 이벤트 기반 암호화폐 페어 트레이딩 시스템
