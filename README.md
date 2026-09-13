@@ -30,8 +30,8 @@
 
 ```bash
 # 저장소 클론
-git clone https://github.com/younghwan91/trading_code.git
-cd trading_code
+git clone https://github.com/younghwan91/crypto-pair-trading.git
+cd crypto-pair-trading
 
 # uv 사용시
 uv sync
@@ -879,7 +879,7 @@ pytest tests/ --cov=quantbox --cov-report=html
 ## 프로젝트 구조
 
 ```
-trading_code/
+crypto-pair-trading/
 ├── quantbox/
 │   ├── __init__.py
 │   ├── core/
