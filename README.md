@@ -108,6 +108,13 @@ print(results.metrics.summary())
 
 ---
 
+## API 키 설정
+
+API 키는 코드나 설정 파일에 넣지 않고 환경변수로만 읽습니다. `.env.example` 을 `.env` 로 복사해
+`BINANCE_API_KEY`, `BINANCE_API_SECRET`(선택: `BINANCE_TESTNET=true`)을 채운 뒤
+`set -a; . ./.env; set +a` 로 불러옵니다. `.env` 는 `.gitignore` 대상입니다. 백테스트는 키 없이 동작하고,
+실거래(`TradingMode.LIVE`, `LiveExecutionHandler`)는 키가 없으면 시작을 거부합니다.
+
 ## 아키텍처 개요
 
 ```
@@ -300,11 +307,9 @@ backtest_exec = BacktestExecutionHandler(
 fill = backtest_exec.execute_order(order, current_price=50000.0)
 
 # 실거래 핸들러 (Binance)
-live_exec = LiveExecutionHandler(
-    api_key="your_api_key",
-    api_secret="your_api_secret",
-    testnet=True  # 테스트넷 사용
-)
+# config.exchange.api_key / api_secret 은 환경변수 BINANCE_API_KEY / BINANCE_API_SECRET 에서 읽는다.
+# 키가 없으면 LiveExecutionHandler 는 생성 단계에서 RuntimeError 로 거부한다.
+live_exec = LiveExecutionHandler(config)
 ```
 
 ---

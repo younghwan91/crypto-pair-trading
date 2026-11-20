@@ -56,17 +56,40 @@ class ExchangeConfig:
     rate_limit: float = 0.5  # seconds between requests
     max_retries: int = 3
     retry_delay: float = 2.0
-    
+
+    def __post_init__(self):
+        # Credentials are never stored in code or config files: when not passed
+        # explicitly they are read from the environment (see .env.example).
+        if not self.api_key:
+            self.api_key = os.environ.get("BINANCE_API_KEY", "")
+        if not self.api_secret:
+            self.api_secret = os.environ.get("BINANCE_API_SECRET", "")
+
+    @property
+    def has_credentials(self) -> bool:
+        return bool(self.api_key and self.api_secret)
+
+    def require_credentials(self) -> None:
+        """Fail closed: refuse to proceed without API credentials."""
+        if not self.has_credentials:
+            raise RuntimeError(
+                "BINANCE_API_KEY / BINANCE_API_SECRET are not set; "
+                "live trading refuses to start (see .env.example)."
+            )
+
+    @classmethod
+    def from_env(cls, testnet: Optional[bool] = None) -> "ExchangeConfig":
+        """Load exchange config from environment variables."""
+        if testnet is None:
+            testnet = os.environ.get("BINANCE_TESTNET", "").lower() in ("1", "true", "yes")
+        return cls(testnet=testnet)
+
     @classmethod
     def from_file(cls, filepath: str) -> "ExchangeConfig":
-        """Load exchange config from JSON file."""
+        """Load non-secret exchange settings from JSON; credentials come from env."""
         with open(filepath, 'r') as f:
             data = json.load(f)
-        return cls(
-            api_key=data.get('api_key', ''),
-            api_secret=data.get('api_secret', ''),
-            testnet=data.get('testnet', False)
-        )
+        return cls(testnet=data.get('testnet', False))
 
 
 @dataclass
@@ -191,6 +214,10 @@ class Config:
         
         if self.risk.max_position_size <= 0 or self.risk.max_position_size > 1:
             raise ValueError("max_position_size must be between 0 and 1")
+
+        # Live trading is fail-closed: no credentials in the environment, no start.
+        if self.mode == TradingMode.LIVE:
+            self.exchange.require_credentials()
     
     def _create_directories(self):
         """Create necessary directories if they don't exist."""

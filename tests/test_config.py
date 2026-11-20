@@ -148,3 +148,29 @@ class TestTradingMode:
         assert TradingMode.BACKTEST.value == "backtest"
         assert TradingMode.PAPER.value == "paper"
         assert TradingMode.LIVE.value == "live"
+
+
+class TestCredentialsFromEnv:
+    """Credentials come from the environment; live mode is fail-closed."""
+
+    def test_reads_env(self, monkeypatch):
+        monkeypatch.setenv("BINANCE_API_KEY", "env_key")
+        monkeypatch.setenv("BINANCE_API_SECRET", "env_secret")
+        cfg = ExchangeConfig()
+        assert cfg.api_key == "env_key" and cfg.has_credentials
+
+    def test_backtest_runs_without_env(self, monkeypatch, tmp_path):
+        monkeypatch.delenv("BINANCE_API_KEY", raising=False)
+        monkeypatch.delenv("BINANCE_API_SECRET", raising=False)
+        monkeypatch.chdir(tmp_path)
+        from quantbox.core.config import Config
+        Config()  # default mode is backtest
+
+    def test_live_refuses_without_env(self, monkeypatch, tmp_path):
+        import pytest
+        monkeypatch.delenv("BINANCE_API_KEY", raising=False)
+        monkeypatch.delenv("BINANCE_API_SECRET", raising=False)
+        monkeypatch.chdir(tmp_path)
+        from quantbox.core.config import Config, TradingMode
+        with pytest.raises(RuntimeError):
+            Config(mode=TradingMode.LIVE)

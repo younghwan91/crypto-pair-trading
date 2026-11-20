@@ -172,6 +172,7 @@ class LiveExecutionHandler(ExecutionHandler):
     
     def __init__(self, config: Config, client=None):
         super().__init__(config)
+        config.exchange.require_credentials()  # fail closed
         self.client = client
         self.leverage = config.risk.leverage
         self.max_retries = config.exchange.max_retries
