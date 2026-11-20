@@ -920,6 +920,10 @@ crypto-pair-trading/
 
 ---
 
+## 라이선스
+
+[MIT](LICENSE) © 2026 Younghwan Chae
+
 ## 면책 조항
 
 이 소프트웨어는 교육 및 연구 목적으로만 사용해야 합니다.
