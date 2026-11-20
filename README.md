@@ -1,10 +1,10 @@
-# QuantBox
+# crypto-pair-trading
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-younghwan--chae-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/younghwan-chae/)
 
 **암호화폐 페어 트레이딩 프레임워크**
 
-백테스팅과 실거래를 통합한 이벤트 기반 암호화폐 페어 트레이딩 시스템
+백테스팅과 실거래를 통합한 이벤트 기반 암호화폐 페어 트레이딩 시스템. 패키지 이름은 `quantbox` 이며, 같은 이름의 [quantbox](https://github.com/younghwan91/quantbox) 레포(VR 스퀴즈 선물 시스템)와는 별개다.
 
 ---
 
@@ -12,17 +12,19 @@
 
 1. [설치](#설치)
 2. [빠른 시작](#빠른-시작)
-3. [아키텍처 개요](#아키텍처-개요)
-4. [모듈별 상세 설명](#모듈별-상세-설명)
+3. [API 키 설정](#api-키-설정)
+4. [아키텍처 개요](#아키텍처-개요)
+5. [모듈별 상세 설명](#모듈별-상세-설명)
    - [Core 모듈](#1-core-모듈)
    - [Data 모듈](#2-data-모듈)
    - [Strategy 모듈](#3-strategy-모듈)
    - [Backtest 모듈](#4-backtest-모듈)
    - [Optimization 모듈](#5-optimization-모듈)
    - [Utils 모듈](#6-utils-모듈)
-5. [API 레퍼런스](#api-레퍼런스)
-6. [예제 코드](#예제-코드)
-7. [테스트](#테스트)
+6. [API 레퍼런스](#api-레퍼런스)
+7. [예제 코드](#예제-코드)
+8. [테스트](#테스트)
+9. [프로젝트 구조](#프로젝트-구조)
 
 ---
 
@@ -42,7 +44,7 @@ pip install -e .
 
 ### 의존성
 
-- Python 3.9+
+- Python 3.13+
 - numpy, pandas, scipy, statsmodels
 - numba (JIT 가속)
 - pykalman (칼만 필터)
@@ -111,7 +113,7 @@ print(results.metrics.summary())
 ## API 키 설정
 
 API 키는 코드나 설정 파일에 넣지 않고 환경변수로만 읽습니다. `.env.example` 을 `.env` 로 복사해
-`BINANCE_API_KEY`, `BINANCE_API_SECRET`(선택: `BINANCE_TESTNET=true`)을 채운 뒤
+`BINANCE_API_KEY`, `BINANCE_API_SECRET`(`BINANCE_TESTNET=true` 면 테스트넷)을 채운 뒤
 `set -a; . ./.env; set +a` 로 불러옵니다. `.env` 는 `.gitignore` 대상입니다. 백테스트는 키 없이 동작하고,
 실거래(`TradingMode.LIVE`, `LiveExecutionHandler`)는 키가 없으면 시작을 거부합니다.
 
@@ -896,7 +898,6 @@ crypto-pair-trading/
 │   ├── data/
 │   │   ├── downloader.py      # 데이터 다운로드
 │   │   ├── cache.py           # 캐싱 시스템
-│   │   └── preprocessor.py    # 전처리
 │   ├── strategy/
 │   │   ├── filters.py         # 페어 필터
 │   │   ├── pair_strategy.py   # 페어 전략
@@ -910,11 +911,13 @@ crypto-pair-trading/
 │   │   ├── optimizer.py       # 최적화 알고리즘
 │   │   ├── objective.py       # 목적 함수
 │   │   └── sensitivity.py     # 민감도 분석
-│   └── utils/
-│       ├── numba_ops.py       # Numba 가속 함수
-│       └── costs.py           # 거래 비용 모델
+│   ├── utils/
+│   │   ├── numba_ops.py       # Numba 가속 함수
+│   │   └── costs.py           # 거래 비용 모델
+│   ├── ui/                    # 대시보드
+│   └── examples/              # basic_usage.py
 ├── tests/                     # 유닛 테스트
-├── data/                      # 데이터 캐시
+├── .env.example               # API 키 환경변수 틀 (값은 .env 에, 커밋 금지)
 └── pyproject.toml
 ```
 
