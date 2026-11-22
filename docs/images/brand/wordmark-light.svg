@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" height="64" fill="none">
+  <defs>
+    <linearGradient id="cpt-bg-l" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#0B1120"/>
+    </linearGradient>
+    <linearGradient id="cpt-cyan-l" x1="12" y1="20" x2="52" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#0891B2"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#cpt-bg-l)"/>
+  <rect x="1" y="1" width="62" height="62" rx="13" stroke="#06B6D4" stroke-opacity="0.3" stroke-width="1.5"/>
+  <line x1="12" y1="32" x2="52" y2="32" stroke="#64748B" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <path d="M12 22 C19 14, 25 46, 32 32 C39 18, 45 38, 52 32" stroke="url(#cpt-cyan-l)" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M12 42 C19 50, 25 18, 32 32 C39 46, 45 26, 52 32" stroke="#A78BFA" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="32" cy="32" r="3.2" fill="#F8FAFC"/>
+  <circle cx="52" cy="32" r="3.2" fill="#22D3EE"/>
+  <text x="80" y="31" fill="#0F172A" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="21" font-weight="700" letter-spacing="-0.3">Crypto Pair Trading</text>
+  <text x="80" y="49" fill="#64748B" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" letter-spacing="0.7">COINTEGRATION &amp; STAT-ARB FRAMEWORK</text>
+</svg>
