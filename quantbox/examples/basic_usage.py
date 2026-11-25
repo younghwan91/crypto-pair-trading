@@ -1,6 +1,12 @@
 """
 Example usage of QuantBox framework.
 
+NEEDS NETWORK: every example here downloads real market data from the Binance
+public API through DataDownloader. For a run with no network and no API keys,
+use the offline demo on synthetic data instead:
+
+    uv run python -m quantbox.examples.offline_demo
+
 This script demonstrates:
 1. Data download and caching
 2. Pair selection with filters
