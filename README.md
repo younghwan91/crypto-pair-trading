@@ -27,34 +27,25 @@ cd crypto-pair-trading
 uv sync
 ```
 
-Run a pair filter and backtest on Binance historical data without API keys:
+Run the full pair filter and backtest pipeline offline, with no API keys and no network (the data is **synthetic**: one cointegrated pair plus two unrelated random walks):
 
-```python
-from quantbox.data import BinanceDataLoader
-from quantbox.strategy.filters import (
-    FilterPipeline, CorrelationFilter, CointegrationFilter, HalfLifeFilter
-)
-from quantbox.backtest import BacktestRunner
-from quantbox.core import Config
-
-loader = BinanceDataLoader()
-btc = loader.download("BTCUSDT", interval="1h", start_date="2024-01-01", end_date="2024-12-31")
-eth = loader.download("ETHUSDT", interval="1h", start_date="2024-01-01", end_date="2024-12-31")
-
-pipeline = FilterPipeline([
-    CorrelationFilter(min_corr=0.7, max_corr=0.99),
-    CointegrationFilter(max_pvalue=0.05),
-    HalfLifeFilter(min_hl=5, max_hl=100),
-])
-result = pipeline.apply(btc["close"], eth["close"])
-print(f"Pair passed: {result.passed} (score: {result.score:.2f})")
-
-config = Config(initial_capital=10000.0, entry_z_score=2.0, exit_z_score=0.5, trading_fee=0.0004)
-results = BacktestRunner(config).run({"BTCUSDT": btc, "ETHUSDT": eth})
-print(results.metrics.summary())
+```bash
+uv run python -m quantbox.examples.offline_demo
 ```
 
-You will see the pair filter pass/fail result and a summary of backtest return, Sharpe ratio, drawdown, and trade statistics. For live trading (`TradingMode.LIVE`), copy `.env.example` to `.env` and export `BINANCE_API_KEY` and `BINANCE_API_SECRET`.
+Real output (synthetic data, so the numbers only prove the engine runs, not that a strategy works):
+
+```text
+Pair filter (synthetic data):
+  AAAUSDT/BBBUSDT: passed=True score=0.84
+  AAAUSDT/CCCUSDT: passed=False score=0.00
+  CCCUSDT/DDDUSDT: passed=False score=0.26
+
+Backtest (synthetic data, fees + slippage included):
+Return: 0.20% | Sharpe: 3.67 | Max DD: 0.01% | Win Rate: 100.0% | Trades: 1
+```
+
+The script is [quantbox/examples/offline_demo.py](quantbox/examples/offline_demo.py); swap `synthetic_market()` for Binance data via `DataDownloader` (see [basic_usage.py](quantbox/examples/basic_usage.py)). For live trading (`TradingMode.LIVE`), copy `.env.example` to `.env` and export `BINANCE_API_KEY` and `BINANCE_API_SECRET`. This repo is not published on PyPI; install from source as above.
 
 ## What it does
 
@@ -94,6 +85,13 @@ See the [Module Guide](docs/guide.md#module-guide) for configuration options and
 ## Contributing
 
 Issues and pull requests are welcome. Run the test suite with `pytest tests/ -v` before opening a PR.
+
+## More from the same author
+
+- [quantbox](https://github.com/younghwan91/quantbox): a sibling quant framework.
+- [crypto-quant-insights](https://github.com/younghwan91/crypto-quant-insights): crypto quant research notes.
+- [kiwoom-client](https://github.com/younghwan91/kiwoom-client): Python client for the Kiwoom (Korean stock) API.
+- [fin-checkup](https://github.com/younghwan91/fin-checkup): financial health check-up for Korean listed companies from DART filings.
 
 ## License
 
