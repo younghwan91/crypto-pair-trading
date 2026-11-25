@@ -27,34 +27,25 @@ cd crypto-pair-trading
 uv sync
 ```
 
-API 키 없이 바이낸스 과거 데이터를 내려받아 페어 필터링과 백테스트를 바로 실행할 수 있습니다.
+API 키도 네트워크도 없이 필터링과 백테스트 전체 흐름을 오프라인으로 실행할 수 있습니다. 데이터는 **합성 데이터**(공적분 페어 1쌍과 무관한 랜덤워크 2개)입니다.
 
-```python
-from quantbox.data import BinanceDataLoader
-from quantbox.strategy.filters import (
-    FilterPipeline, CorrelationFilter, CointegrationFilter, HalfLifeFilter
-)
-from quantbox.backtest import BacktestRunner
-from quantbox.core import Config
-
-loader = BinanceDataLoader()
-btc = loader.download("BTCUSDT", interval="1h", start_date="2024-01-01", end_date="2024-12-31")
-eth = loader.download("ETHUSDT", interval="1h", start_date="2024-01-01", end_date="2024-12-31")
-
-pipeline = FilterPipeline([
-    CorrelationFilter(min_corr=0.7, max_corr=0.99),
-    CointegrationFilter(max_pvalue=0.05),
-    HalfLifeFilter(min_hl=5, max_hl=100),
-])
-result = pipeline.apply(btc["close"], eth["close"])
-print(f"페어 적합성: {result.passed} (점수: {result.score:.2f})")
-
-config = Config(initial_capital=10000.0, entry_z_score=2.0, exit_z_score=0.5, trading_fee=0.0004)
-results = BacktestRunner(config).run({"BTCUSDT": btc, "ETHUSDT": eth})
-print(results.metrics.summary())
+```bash
+uv run python -m quantbox.examples.offline_demo
 ```
 
-실행하면 페어 필터 통과 여부와 수익률, 샤프 비율, 최대 낙폭, 거래 통계를 출력합니다. 실거래(`TradingMode.LIVE`)를 사용하려면 `.env.example`을 `.env`로 복사해 `BINANCE_API_KEY`와 `BINANCE_API_SECRET`을 환경변수로 설정합니다.
+실제 출력입니다. 합성 데이터이므로 엔진이 동작한다는 확인일 뿐, 전략의 성과를 뜻하지 않습니다.
+
+```text
+Pair filter (synthetic data):
+  AAAUSDT/BBBUSDT: passed=True score=0.84
+  AAAUSDT/CCCUSDT: passed=False score=0.00
+  CCCUSDT/DDDUSDT: passed=False score=0.26
+
+Backtest (synthetic data, fees + slippage included):
+Return: 0.20% | Sharpe: 3.67 | Max DD: 0.01% | Win Rate: 100.0% | Trades: 1
+```
+
+스크립트는 [quantbox/examples/offline_demo.py](quantbox/examples/offline_demo.py)입니다. `synthetic_market()`을 `DataDownloader`로 받은 바이낸스 데이터로 바꾸는 방법은 [basic_usage.py](quantbox/examples/basic_usage.py)를 참고하세요. 실거래(`TradingMode.LIVE`)는 `.env.example`을 `.env`로 복사하고 `BINANCE_API_KEY`, `BINANCE_API_SECRET`을 설정합니다. 이 레포는 PyPI에 배포하지 않으므로 위처럼 소스로 설치합니다.
 
 ## 주요 기능
 
@@ -94,6 +85,13 @@ print(results.metrics.summary())
 ## 기여
 
 이슈와 PR을 환영합니다. PR을 올리기 전에 `pytest tests/ -v`로 테스트를 실행해 주세요.
+
+## 같은 저자의 도구
+
+- [quantbox](https://github.com/younghwan91/quantbox): 형제 퀀트 프레임워크입니다.
+- [crypto-quant-insights](https://github.com/younghwan91/crypto-quant-insights): 암호화폐 퀀트 리서치 노트입니다.
+- [kiwoom-client](https://github.com/younghwan91/kiwoom-client): 키움 API 파이썬 클라이언트입니다.
+- [fin-checkup](https://github.com/younghwan91/fin-checkup): DART 공시로 보는 한국 상장사 재무 진단입니다.
 
 ## 라이선스
 
