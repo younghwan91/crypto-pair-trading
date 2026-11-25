@@ -19,7 +19,7 @@ from quantbox.strategy.pair_selector import PairSelector
 
 def synthetic_market(n: int = 1500, seed: int = 7) -> dict[str, pd.DataFrame]:
     rng = np.random.default_rng(seed)
-    idx = pd.date_range("2024-01-01", periods=n, freq="h", tz="UTC")
+    idx = pd.date_range("2024-01-01", periods=n, freq="h")  # naive, like most CSV/exchange dumps
     base = np.cumsum(rng.normal(0, 0.02, n))
     spread = np.zeros(n)
     for i in range(1, n):  # mean-reverting (Ornstein-Uhlenbeck) spread

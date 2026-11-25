@@ -23,6 +23,12 @@ from quantbox.data.preprocessor import DataPreprocessor
 logger = logging.getLogger('PairTradingStrategy')
 
 
+def to_utc(ts) -> pd.Timestamp:
+    """Bar timestamp as UTC. Naive timestamps are taken to be UTC already."""
+    ts = pd.Timestamp(ts)
+    return ts.tz_localize('UTC') if ts.tzinfo is None else ts.tz_convert('UTC')
+
+
 class PairTradingStrategy(StatefulStrategy):
     """
     Mean-reversion pair trading strategy.
@@ -107,7 +113,9 @@ class PairTradingStrategy(StatefulStrategy):
             'spread_mean': pair_data.spread_mean,
             'spread_std': pair_data.spread_std,
             'half_life': pair_data.half_life,
-            'last_updated': datetime.now(timezone.utc)
+            # Bar time of the last formation bar, not wall-clock time: the
+            # refresh interval must be measured in the data's own clock.
+            'last_updated': to_utc(data1.index.intersection(data2.index).max())
         }
         
         logger.info(
@@ -178,7 +186,7 @@ class PairTradingStrategy(StatefulStrategy):
             'intercept': intercept,
             'spread_mean': spread.mean(),
             'spread_std': spread.std(),
-            'last_updated': datetime.now(timezone.utc)
+            'last_updated': to_utc(common_idx.max())
         }
     
     def should_enter_long(
@@ -261,6 +269,8 @@ class PairTradingStrategy(StatefulStrategy):
         
         This is called by the trading engine for each new bar.
         """
+        timestamp = to_utc(timestamp)
+
         # Update price history
         self.update_price_history(timestamp, data)
         

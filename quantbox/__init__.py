@@ -12,20 +12,18 @@ Features:
 - Walk-forward analysis and robustness testing
 - Interactive analysis dashboard
 
-Usage:
-    from quantbox import Config, TradingEngine
-    from quantbox.strategy import PairTradingStrategy
-    from quantbox.data import DataDownloader
-    
-    # Initialize
-    config = Config.load('config.yaml')
-    engine = TradingEngine(config)
-    
-    # Run backtest
-    results = engine.run_backtest(strategy, data)
-    
-    # Or live trading
-    engine.run_live(strategy)
+Usage (offline, synthetic data; see quantbox/examples/offline_demo.py):
+    from quantbox import BacktestConfig, BacktestRunner, PairSelector
+    from quantbox.examples.offline_demo import synthetic_market
+
+    data = synthetic_market()  # Dict[symbol, OHLCV DataFrame]
+    runner = BacktestRunner(BacktestConfig(formation_periods=240, trading_periods=48))
+    results = runner.run_backtest(data, pair_selector=PairSelector(), progress=False)
+    print(results["metrics"].summary())
+
+    Real Binance data: DataDownloader().download_multiple(...) returns the same
+    Dict[symbol, DataFrame] shape (network required). Naive bar timestamps are
+    treated as UTC.
 
 Author: QuantBox Team
 Version: 1.0.0
